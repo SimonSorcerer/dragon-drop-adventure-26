@@ -1,0 +1,15 @@
+.inventory > h2 {
+    padding: 6px 4px;
+    margin-bottom: 6px;
+    border-top: 1px dashed #666;
+    border-bottom: 1px dashed #666;
+}
+
+.items {
+    min-height: 7em;
+    padding: 0 4px;
+}
+
+.items.over {
+    background-color: #444;
+}

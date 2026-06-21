@@ -1,0 +1,36 @@
+.item {
+    color: orangered;
+    cursor: default;
+    display: inline-block;
+}
+
+.item:hover {
+    color: gold;
+}
+
+.pickable {
+    color: yellowgreen;
+    cursor: pointer;
+}
+
+.pickable:hover {
+    color: gold;
+}
+
+.over {
+    color: gold;
+}
+
+.inventoryItem {
+    margin: 0 2px;
+}
+
+.inventoryItem::before {
+    content: "[ ";
+    color: #666;
+}
+
+.inventoryItem::after {
+    content: " ]";
+    color: #666;
+}

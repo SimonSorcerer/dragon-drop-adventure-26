@@ -1,0 +1,11 @@
+.console {
+    position: relative;
+    background-color: #222;
+    line-height: 1.4em;
+    height: 1.4em;
+    padding-left: 10px;
+    padding-right: 10px;
+    color: gold;
+    opacity: 0.9;
+    margin: 6px 0;
+}

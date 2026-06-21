@@ -1,0 +1,28 @@
+.description {
+    min-height: 1em;
+    max-height: 8em;
+    overflow-y: auto;
+    border-top: 1px dashed #666;
+    margin: 6px 0;
+}
+
+.record {
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+.record.old {
+    color: #666;
+}
+
+.prefix {
+    color: yellowgreen;
+}
+
+.record.old .prefix {
+    color: #999;
+}
+
+.message {
+    border-bottom: 1px dashed #333;
+}

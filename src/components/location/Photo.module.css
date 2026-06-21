@@ -1,0 +1,7 @@
+.photo {
+    display: none;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 16px;
+}

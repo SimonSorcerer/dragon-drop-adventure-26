@@ -1,0 +1,48 @@
+import './App.css';
+import { DndContext, type DragEndEvent } from '@dnd-kit/core';
+import { useEffect } from 'react';
+import { Game } from './components/Game';
+import { useGameStore } from './utils/useGameStore';
+import { findInteraction } from './assets/interactions/interactions';
+import { stripPlaceholders } from './utils/stripPlaceholders';
+import { loc01 } from './assets/locations/loc01';
+import { items } from './assets/items/items';
+
+function App() {
+    const pickUpItem = useGameStore((state) => state.pickUpItem);
+    const addLogEntry = useGameStore((state) => state.addLogEntry);
+
+    useEffect(() => {
+        addLogEntry({ text: stripPlaceholders(loc01.description) });
+    }, []);
+
+    const handleDragEnd = (event: DragEndEvent) => {
+        const { over, active } = event;
+        if (!over) return;
+
+        const itemId = active.data.current?.itemId as string;
+        const context = active.data.current?.context as string;
+
+        if (over.id === 'inventory') {
+            if (context === 'location' && items[itemId]?.canPickup) {
+                pickUpItem(itemId);
+            }
+        } else if (typeof over.id === 'string' && over.id.startsWith('target-')) {
+            const targetId = over.id.slice('target-'.length);
+            if (targetId !== itemId) {
+                const interaction = findInteraction(itemId, targetId);
+                if (interaction) {
+                    addLogEntry({ prefix: interaction.prefix, text: interaction.text });
+                }
+            }
+        }
+    };
+
+    return (
+        <DndContext onDragEnd={handleDragEnd}>
+            <Game />
+        </DndContext>
+    );
+}
+
+export default App;
