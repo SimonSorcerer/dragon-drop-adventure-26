@@ -212,3 +212,16 @@ The editor is a **separate app** (monorepo sibling). It will share `src/types/Lo
 - No comments unless the reason is non-obvious
 - No test framework currently — if adding tests, use Vitest (compatible with Vite)
 - Item ids use `snake_case`; location ids use `loc_` prefix with descriptive slug
+
+---
+
+## Code style
+
+### Module size and separation of concerns
+
+Keep modules small and focused. Business logic must not live inside visual components — extract it to hooks:
+
+- **Component-specific logic** → a co-located hook named `use<ComponentName>` (e.g. `useActionBar.ts` next to `ActionBar.tsx`)
+- **Shared/general logic** → a hook in `src/utils/` (e.g. `useDragFeedback.ts`)
+
+Visual components in general-purpose modules should stay **under 100 lines**. If a component is growing beyond that, it is a signal that logic or structure needs to be extracted.

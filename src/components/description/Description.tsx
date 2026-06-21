@@ -8,11 +8,9 @@ export const Description = () => {
 
     return (
         <div className={style.description}>
-            {reversed.map((entry, i) => {
-                const originalIndex = log.length - 1 - i;
-                return (
+            {reversed.map((entry, i) => (
                     <div
-                        key={originalIndex}
+                        key={entry.id}
                         className={clsx(style.record, { [style.old]: i > 0 })}
                     >
                         <div className={style.message}>
@@ -22,8 +20,7 @@ export const Description = () => {
                             {entry.text}
                         </div>
                     </div>
-                );
-            })}
+            ))}
         </div>
     );
 };
