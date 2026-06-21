@@ -14,9 +14,12 @@ export const Item = ({ id, context }: ItemProps) => {
     const item = items[id];
     const setHoveredItem = useGameStore((state) => state.setHoveredItem);
 
+    const canPickup = item?.canPickup ?? false;
+
     const { attributes, listeners, setNodeRef: setDragRef, transform } = useDraggable({
         id: context + '-' + id,
         data: { itemId: id, context },
+        disabled: !canPickup,
     });
 
     const { isOver, setNodeRef: setDropRef } = useDroppable({
@@ -29,10 +32,9 @@ export const Item = ({ id, context }: ItemProps) => {
         setDropRef(node);
     };
 
-    const dnd_style = { transform: CSS.Translate.toString(transform) };
+    const dnd_style = canPickup ? { transform: CSS.Translate.toString(transform) } : undefined;
     const name = item?.name ?? id;
     const description = item?.description ?? 'An indescribable item.';
-    const canPickup = item?.canPickup ?? false;
 
     return (
         <span
