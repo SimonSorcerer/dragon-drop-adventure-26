@@ -27,13 +27,17 @@ function App() {
             if (context === 'location' && items[itemId]?.canPickup) {
                 pickUpItem(itemId);
             }
-        } else if (typeof over.id === 'string' && over.id.startsWith('target-')) {
+        } else if (
+            typeof over.id === 'string' &&
+            over.id.startsWith('target-')
+        ) {
             const targetId = over.id.slice('target-'.length);
             if (targetId !== itemId) {
                 const interaction = findInteraction(itemId, targetId);
-                if (interaction) {
-                    addLogEntry({ prefix: interaction.prefix, text: interaction.text });
-                }
+                addLogEntry({
+                    prefix: interaction.prefix,
+                    text: interaction.text,
+                });
             }
         }
     };

@@ -1,3 +1,5 @@
+import { items } from '@assets/items/items';
+
 interface Interaction {
     keys: [string, string];
     prefix: string;
@@ -22,10 +24,21 @@ export const interactions: Interaction[] = [
     },
 ];
 
-export function findInteraction(itemId: string, targetId: string): Interaction | undefined {
-    return interactions.find(
-        (i) =>
-            (i.keys[0] === itemId && i.keys[1] === targetId) ||
-            (i.keys[0] === targetId && i.keys[1] === itemId),
+function fallback(itemId: string, targetId: string) {
+    const a = items[itemId]?.name ?? itemId;
+    const b = items[targetId]?.name ?? targetId;
+    return {
+        prefix: `Use ${a} with ${b}`,
+        text: "That doesn't seem to do anything useful.",
+    };
+}
+
+export function findInteraction(itemId: string, targetId: string) {
+    return (
+        interactions.find(
+            (i) =>
+                (i.keys[0] === itemId && i.keys[1] === targetId) ||
+                (i.keys[0] === targetId && i.keys[1] === itemId),
+        ) ?? fallback(itemId, targetId)
     );
 }
