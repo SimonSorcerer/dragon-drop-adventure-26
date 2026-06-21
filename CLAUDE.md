@@ -6,10 +6,10 @@ A text-adventure game engine where the primary interaction mechanic is **drag an
 
 - **Examines** items by hovering (tooltip) or right-clicking (context menu)
 - **Picks up** items by dragging them into the inventory panel
-- **Uses items** by dragging from inventory and dropping onto a highlighted target word in the description
+- **Uses items** by dragging from inventory (or location) and dropping onto another highlighted item word in the prose
 - **Navigates** between locations via exit links in the description or a navigation bar
 
-When an item is picked up, the description text changes — the item word disappears and the prose is rewritten to reflect the new state (e.g. "you pick up the broken bottle" becomes part of the new narration). This means each item pickup has a corresponding description variant for the location.
+When an item is picked up, the description text should change — the item word disappears and the prose is rewritten to reflect the new state. This means each item pickup has a corresponding description variant for the location. **Not yet implemented** — description variants are a planned mechanic.
 
 Game content lives in TypeScript files under `src/assets/` — no backend.
 
@@ -18,8 +18,8 @@ Game content lives in TypeScript files under `src/assets/` — no backend.
 ## Stack
 
 - **React 19 + TypeScript + Vite** (`npm run dev`, `npm run build`, `npm run preview`)
-- **`@dnd-kit/core`** — all drag-and-drop (draggable items, droppable inventory, droppable target words)
-- **`zustand`** — global game state (inventory, current location, flags)
+- **`@dnd-kit/core`** — all drag-and-drop (draggable items, droppable inventory, droppable item targets)
+- **`zustand`** — global game state (inventory, event log, hover state)
 - **`clsx`** — conditional classnames
 - **CSS Modules** — `*.module.css` per component, no global utility classes
 
@@ -36,6 +36,23 @@ Game content lives in TypeScript files under `src/assets/` — no backend.
 | `@types` | `src/types/` |
 
 Always prefer these over relative imports.
+
+---
+
+## Color palette
+
+| Token | Value | Usage |
+|---|---|---|
+| Background | `#333` | Page body |
+| Surface dark | `#222` | Console bar |
+| Surface mid | `#444` | Inventory drop-zone active state |
+| Border | `#666` | Dashed borders, item brackets |
+| Text primary | `#fff` | Body text |
+| Text muted | `#666` | Old/faded log entries |
+| Text prefix-old | `#999` | Prefix of faded log entries |
+| Gold | `gold` | Console text, hover state on items |
+| Orange-red | `orangered` | Non-pickable item color |
+| Yellow-green | `yellowgreen` | Pickable item color, log prefixes |
 
 ---
 
@@ -59,8 +76,8 @@ interface Item {
 interface Location {
   id: string;
   name: string;
-  description: string;   // current prose — contains {{item_id}} and {{target:word_id}} placeholders
-  photo: string;         // filename under src/assets/
+  description: string;   // prose — contains {{item_id}} placeholders
+  photo: string;         // filename under src/assets/ (not currently rendered)
   items: Item[];
   exits: LocationExit[];
 }
@@ -68,29 +85,45 @@ interface Location {
 
 ### Description placeholders
 
-The `description` string uses two kinds of placeholders that `parseLocationDescription` converts to React components:
+The `description` string uses `{{item_id}}` placeholders that `parseLocationDescription` converts to React components:
 
-- `{{item_id}}` — renders a draggable `<Item context="location" id="item_id" />` (highlighted, draggable)
-- `{{target:word_id}}` — renders a droppable target word that can receive item drops
+- `{{item_id}}` — renders a draggable + droppable `<Item context="location" id="item_id" />`
 
-When a pickup or interaction changes the scene, a new description string is swapped in (state-driven). Location data should define multiple description variants tied to game state (e.g. an initial description and post-pickup variants per item).
+`stripPlaceholders(text)` (`src/utils/stripPlaceholders.ts`) converts a description to plain text by replacing `{{item_id}}` with the item's `name` — used when adding the location prose to the event log.
+
+---
+
+## Layout structure
+
+```
+.game (600×480px, dashed border)
+  .gameHeader — h2 title + Settings icons (flex row)
+  .location   — prose paragraph with inline draggable item spans
+  .description — scrolling event log (max 8em, newest entry first)
+    .record        — newest entry (white)
+    .record.old    — older entries (grey)
+  .console    — one-liner feedback bar (dark bg, gold text)
+  .inventory
+    h2 "Your inventory:"
+    .items (min 7em, drop zone) — [ item ] [ item ] ...
+```
 
 ---
 
 ## Component map
 
 ```
-App.tsx                  — DndContext root; handles drag-end dispatch
-└─ Game.tsx              — Layout: Settings | Location | ActionBar | Inventory
-   ├─ Settings.tsx        — Dark mode / text size / playback (TTS) toggles
-   ├─ Location.tsx        — Photo + parsed description text
-   │   └─ Photo.tsx
-   ├─ ActionBar.tsx       — contextual feedback / action prompts
-   ├─ Inventory.tsx       — Droppable panel; renders held items
-   └─ Item.tsx            — Draggable inline item (used in both Location and Inventory)
+App.tsx                   — DndContext root; initialises log; handles drag-end dispatch
+└─ Game.tsx               — Layout: header | Location | Description | ActionBar | Inventory
+   ├─ Settings.tsx         — Dark mode / text size / playback (TTS) toggles (in header)
+   ├─ Location.tsx         — Parsed description prose with inline Item spans
+   ├─ Description.tsx      — Scrolling event log (reads log[] from store)
+   ├─ ActionBar.tsx        — Console bar; live drag/hover feedback via useDndMonitor
+   ├─ Inventory.tsx        — Droppable panel (id: "inventory"); renders held items
+   └─ Item.tsx             — Inline <span>; both draggable and droppable
 ```
 
-`Box.tsx` is a generic panel wrapper with an optional `placeholder` label. It forwards `ref` as a regular prop (not `React.forwardRef`) — preserve this pattern.
+`Box.tsx` is a generic panel wrapper with an optional `placeholder` label. It forwards `ref` as a regular prop (not `React.forwardRef`) — preserve this pattern. Currently unused by the main layout but kept for future use.
 
 ---
 
@@ -100,39 +133,69 @@ Backed by zustand.
 
 ```ts
 {
-  inventory: Set<string>   // item ids currently held
+  inventory: Set<string>         // item ids currently held
+  log: LogEntry[]                // event log entries, oldest first
+  hoveredItemId: string | null   // item currently under the mouse (no drag)
+
   pickUpItem(itemId): void
+  addLogEntry(entry: LogEntry): void
+  setHoveredItem(itemId: string | null): void
+}
+
+interface LogEntry {
+  prefix?: string   // yellowgreen label, e.g. "Open padlock with key"
+  text: string
 }
 ```
 
-**Extend this store** as new mechanics are added (current location, game flags, location description variants). Always create a new `Set` when mutating — do not mutate in place.
+Always create a new `Set` when mutating inventory — do not mutate in place.
 
 ---
 
 ## Key patterns
 
-### Adding/removing items from the description
+### Event log
 
-When an item is picked up, the location's `description` should switch to a variant that omits the `{{item_id}}` token and reflects the change in prose. The description variant is keyed by game state (which items have been picked up, which interactions have happened). Avoid tracking this as per-item flags scattered across the store — model it as discrete description state on the location itself.
+`Description.tsx` reads `log[]` from the store and renders entries newest-first. The newest entry gets `.record` (white); all others get `.record.old` (grey). On game start, `App.tsx` seeds the log with the current location prose via `addLogEntry({ text: stripPlaceholders(loc01.description) })`.
 
 ### Drag-and-drop
 
 - `Item` is always `useDraggable({ id: context + '-' + id, data: { itemId, context } })`
+- `Item` is also `useDroppable({ id: 'target-' + id, data: { itemId } })` — items are drop targets for "use" interactions
 - `Inventory` is `useDroppable({ id: 'inventory' })`
-- Target words will be `useDroppable({ id: 'target-' + wordId })` with matching handler in `App`
-- All drop logic lives in `App.tsx`'s `handleDragEnd` — read `event.active.data.current` for context and item id, then dispatch to store
+- All drop logic lives in `App.tsx`'s `handleDragEnd` — reads `event.active.data.current` for context and item id, then dispatches to store
 
-### Use interactions (item → target word)
+### Console bar (ActionBar)
 
-A "use" is: drag an item from inventory, drop on a highlighted `{{target:word_id}}` in the description. The game looks up a rule: `(itemId, targetWordId) → outcome`. Outcomes include: description variant change, item consumed/removed from inventory, exit unlocked, etc. Define these rules in location data, not in component code.
+`ActionBar.tsx` uses `useDndMonitor` to track the active drag and current over-target, and reads `hoveredItemId` from the store. Message priority:
 
-### Examine / right-click
+1. Dragging A over item B → `"Use [A] with [B]"`
+2. Dragging A over inventory → `"Pick up [A]"`
+3. Dragging A (not over anything) → `"Use [A] with ..."`
+4. Hovering (no drag) → `"Look at [item]"`
+5. No interaction → empty
 
-Right-clicking an `<Item>` opens an examine panel (not a browser context menu — call `event.preventDefault()`). Hovering shows the `description` field as a tooltip. Both read from the item definition.
+### Item visual states
+
+| State | Class(es) | Color |
+|---|---|---|
+| Non-pickable item | `.item` | `orangered` |
+| Pickable item | `.item.pickable` | `yellowgreen` |
+| Any item on hover | `.item:hover` | `gold` |
+| Item dragged over | `.item.over` | `gold` |
+| Item in inventory | `.item.inventoryItem` | `[ ]` brackets in `#666` |
+
+### Use interactions (item → item)
+
+Interaction rules live in `src/assets/interactions/interactions.ts` as an array of `{ keys: [itemId, itemId], prefix, text }`. `findInteraction(itemIdA, itemIdB)` matches in either key order. When a drag-drop lands on `'target-' + targetId`, `App.tsx` looks up the rule and calls `addLogEntry` with the result. Rules are order-independent (A+B = B+A).
+
+### Pickup guard
+
+Only items with `canPickup: true` can be dragged into inventory. Non-pickable items (`interactive: true`, `canPickup: false`) are drop targets only — the player can use held items on them.
 
 ### Navigation
 
-Exits are defined on `Location` as `{ direction, destination, description }`. Destination is a location id. The active location lives in game store. Exit links appear either in the description prose or in a dedicated navigation UI — probably both.
+Exits are defined on `Location` as `{ direction, destination, description }`. Destination is a location id. The active location in game store is not yet implemented — currently `loc01` is hardcoded as the default in `Location.tsx`.
 
 ---
 
