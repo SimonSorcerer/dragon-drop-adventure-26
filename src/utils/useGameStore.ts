@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { locations } from '@assets/locations/locations';
 import type { Effect } from '@type/Effect';
+import type { HoveredInteractable } from '@type/HoveredInteractable';
 import { applyEffectToState } from './applyEffect';
 
 export interface LogEntry {
@@ -14,7 +15,7 @@ export interface GameState {
     inventory: Set<string>;
     locationItems: Record<string, Set<string>>;
     log: LogEntry[];
-    hoveredItemId: string | null;
+    hoveredInteractable: HoveredInteractable | null;
     flags: Record<string, unknown>;
 }
 
@@ -28,7 +29,7 @@ interface Action {
     navigateTo: (locationId: string) => void;
     pickUpItem: (itemId: string) => void;
     addLogEntry: (entry: Omit<LogEntry, 'id'>) => void;
-    setHoveredItem: (itemId: string | null) => void;
+    setHoveredInteractable: (value: HoveredInteractable | null) => void;
     setFlag: (key: string, value: unknown) => void;
     applyEffect: (effect: Effect) => void;
 }
@@ -38,7 +39,7 @@ export const useGameStore = create<GameState & Action>()((set) => ({
     inventory: new Set<string>(),
     locationItems: initLocationItems(),
     log: [],
-    hoveredItemId: null,
+    hoveredInteractable: null,
     flags: {},
     navigateTo: (locationId) => set({ currentLocationId: locationId }),
     pickUpItem: (itemId) =>
@@ -55,7 +56,7 @@ export const useGameStore = create<GameState & Action>()((set) => ({
         set((state) => ({
             log: [...state.log, { ...entry, id: state.log.length + 1 }],
         })),
-    setHoveredItem: (itemId) => set({ hoveredItemId: itemId }),
+    setHoveredInteractable: (value) => set({ hoveredInteractable: value }),
     setFlag: (key, value) =>
         set((state) => ({ flags: { ...state.flags, [key]: value } })),
     applyEffect: (effect) => set((state) => applyEffectToState(effect, state)),

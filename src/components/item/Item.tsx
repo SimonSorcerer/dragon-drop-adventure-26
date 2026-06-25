@@ -12,7 +12,7 @@ interface ItemProps {
 
 export const Item = ({ id, context }: ItemProps) => {
     const item = items[id];
-    const setHoveredItem = useGameStore((state) => state.setHoveredItem);
+    const setHoveredInteractable = useGameStore((state) => state.setHoveredInteractable);
 
     const canPickup = item?.canPickup ?? false;
 
@@ -48,8 +48,8 @@ export const Item = ({ id, context }: ItemProps) => {
             {...listeners}
             {...attributes}
             style={dnd_style}
-            onMouseEnter={() => setHoveredItem(id)}
-            onMouseLeave={() => setHoveredItem(null)}
+            onMouseEnter={() => setHoveredInteractable({ type: 'item', id })}
+            onMouseLeave={() => setHoveredInteractable(null)}
         >
             {name}
         </span>

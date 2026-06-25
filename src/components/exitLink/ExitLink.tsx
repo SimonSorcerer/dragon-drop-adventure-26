@@ -11,6 +11,7 @@ interface ExitLinkProps {
 export const ExitLink = ({ destination }: ExitLinkProps) => {
     const currentLocationId = useGameStore((state) => state.currentLocationId);
     const flags = useGameStore((state) => state.flags);
+    const setHoveredInteractable = useGameStore((state) => state.setHoveredInteractable);
     const navigate = useNavigation();
 
     const location = locations[currentLocationId];
@@ -25,6 +26,8 @@ export const ExitLink = ({ destination }: ExitLinkProps) => {
         <span
             className={clsx(style.exitLink, isLocked && style.locked)}
             onClick={() => !isLocked && navigate(exit.destination)}
+            onMouseEnter={() => setHoveredInteractable({ type: 'exit', destination: exit.destination })}
+            onMouseLeave={() => setHoveredInteractable(null)}
             role='link'
             aria-disabled={isLocked}
         >

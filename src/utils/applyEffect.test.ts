@@ -8,7 +8,7 @@ function makeState(overrides: Partial<GameState> = {}): GameState {
         inventory: new Set<string>(),
         locationItems: { loc_a: new Set(['sword', 'shield']), loc_b: new Set(['key']) },
         log: [],
-        hoveredItemId: null,
+        hoveredInteractable: null,
         flags: {},
         ...overrides,
     };

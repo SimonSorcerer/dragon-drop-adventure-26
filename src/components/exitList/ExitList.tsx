@@ -7,6 +7,7 @@ import style from './ExitList.module.css';
 export const ExitList = () => {
     const currentLocationId = useGameStore((state) => state.currentLocationId);
     const flags = useGameStore((state) => state.flags);
+    const setHoveredInteractable = useGameStore((state) => state.setHoveredInteractable);
     const navigate = useNavigation();
 
     const location = locations[currentLocationId];
@@ -26,6 +27,8 @@ export const ExitList = () => {
                         key={exit.destination}
                         className={clsx(style.exit, isLocked && style.locked)}
                         onClick={() => !isLocked && navigate(exit.destination)}
+                        onMouseEnter={() => setHoveredInteractable({ type: 'exit', destination: exit.destination })}
+                        onMouseLeave={() => setHoveredInteractable(null)}
                         role='link'
                         aria-disabled={isLocked}
                     >

@@ -1,13 +1,14 @@
 import { useDndMonitor } from '@dnd-kit/core';
 import { useState } from 'react';
 import { items } from '@assets/items/items';
+import { locations } from '@assets/locations/locations';
 import { useGameStore } from '@/utils/useGameStore';
 import style from './ActionBar.module.css';
 
 export const ActionBar = () => {
     const [activeItemId, setActiveItemId] = useState<string | null>(null);
     const [overId, setOverId] = useState<string | null>(null);
-    const hoveredItemId = useGameStore((state) => state.hoveredItemId);
+    const hoveredInteractable = useGameStore((state) => state.hoveredInteractable);
 
     useDndMonitor({
         onDragStart(event) {
@@ -39,9 +40,10 @@ export const ActionBar = () => {
         } else {
             message = `Use ${itemName} with ...`;
         }
-    } else if (hoveredItemId) {
-        const itemName = items[hoveredItemId]?.name ?? hoveredItemId;
-        message = `Look at ${itemName}`;
+    } else if (hoveredInteractable?.type === 'item') {
+        message = `Look at ${items[hoveredInteractable.id]?.name ?? hoveredInteractable.id}`;
+    } else if (hoveredInteractable?.type === 'exit') {
+        message = `Go to ${locations[hoveredInteractable.destination]?.name ?? hoveredInteractable.destination}`;
     }
 
     return <div className={style.console}>{message}</div>;
