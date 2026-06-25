@@ -12,10 +12,16 @@ export interface LocationExit {
     description: string;
 }
 
+export interface DescriptionVariant {
+    when: string | string[];
+    description: string;
+}
+
 export interface Location {
     id: string;
     name: string;
     description: string;
+    descriptionVariants?: DescriptionVariant[];
     photo: string;
     items: Item[];
     exits: LocationExit[];
