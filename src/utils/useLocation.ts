@@ -1,4 +1,4 @@
-import type { Location } from '../types/Location';
+import type { Location } from '@type/Location';
 import { parseLocationDescription } from './parseLocationDescription';
 import { resolveDescription } from './resolveDescription';
 import { useGameStore } from './useGameStore';

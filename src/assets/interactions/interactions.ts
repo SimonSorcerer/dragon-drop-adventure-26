@@ -1,9 +1,11 @@
 import { items } from '@assets/items/items';
+import type { Effect } from '@type/Effect';
 
 interface Interaction {
     keys: [string, string];
     prefix: string;
     text: string;
+    effects?: Effect[];
 }
 
 export const interactions: Interaction[] = [
@@ -24,10 +26,11 @@ export const interactions: Interaction[] = [
     },
 ];
 
-function fallback(itemId: string, targetId: string) {
+function fallback(itemId: string, targetId: string): Interaction {
     const a = items[itemId]?.name ?? itemId;
     const b = items[targetId]?.name ?? targetId;
     return {
+        keys: [itemId, targetId],
         prefix: `Use ${a} with ${b}`,
         text: "That doesn't seem to do anything useful.",
     };

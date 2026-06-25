@@ -35,7 +35,7 @@ This engine is **game-agnostic**. The first game shipped in it is a remake of _R
 | `@assets`     | `src/assets/`     |
 | `@components` | `src/components/` |
 | `@utils`      | `src/utils/`      |
-| `@types`      | `src/types/`      |
+| `@type`       | `src/types/`      |
 
 Always prefer these over relative imports.
 

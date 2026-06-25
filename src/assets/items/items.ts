@@ -1,4 +1,4 @@
-import type { Item } from '../../types/Location';
+import type { Item } from '@type/Location';
 
 export const items: Record<string, Item> = {
     drainpipe: {

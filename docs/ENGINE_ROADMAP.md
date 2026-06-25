@@ -16,7 +16,6 @@ Goal: a complete, game-agnostic engine that can run any adventure game defined a
 - [ ] Description variants — location description changes after item pickup or flag state
 - [ ] Exits rendered as clickable links in location prose (direction words trigger `navigateTo`)
 - [ ] Pickup removes item from `locationItems` and adds to inventory (already partially working)
-- [ ] Drop from inventory back to location (POLOŽ equivalent)
 - [ ] Basic dialogue system: `dialogueId` triggers a text exchange, no branching required initially
 
 **Out of scope for Phase 1:**
@@ -24,6 +23,7 @@ Goal: a complete, game-agnostic engine that can run any adventure game defined a
 - Image system (Phase 2)
 - Editor (Phase 4)
 - Tauri packaging (Phase 5)
+- Drop from inventory back to location (POLOŽ) — no confirmed use case in Ramonovo Kouzlo; revisit if a concrete puzzle requires it
 
 ---
 

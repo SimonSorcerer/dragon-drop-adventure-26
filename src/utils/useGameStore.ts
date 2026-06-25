@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import { locations } from '@assets/locations/locations';
+import type { Effect } from '@type/Effect';
+import { applyEffectToState } from './applyEffect';
 
 export interface LogEntry {
     id: number;
@@ -7,13 +9,7 @@ export interface LogEntry {
     text: string;
 }
 
-function initLocationItems(): Record<string, Set<string>> {
-    return Object.fromEntries(
-        Object.entries(locations).map(([id, loc]) => [id, new Set(loc.items.map((item) => item.id))]),
-    );
-}
-
-interface State {
+export interface GameState {
     currentLocationId: string;
     inventory: Set<string>;
     locationItems: Record<string, Set<string>>;
@@ -22,16 +18,22 @@ interface State {
     flags: Record<string, unknown>;
 }
 
+function initLocationItems(): Record<string, Set<string>> {
+    return Object.fromEntries(
+        Object.entries(locations).map(([id, loc]) => [id, new Set(loc.items.map((item) => item.id))]),
+    );
+}
+
 interface Action {
     navigateTo: (locationId: string) => void;
     pickUpItem: (itemId: string) => void;
-    removeItemFromLocation: (locationId: string, itemId: string) => void;
     addLogEntry: (entry: Omit<LogEntry, 'id'>) => void;
     setHoveredItem: (itemId: string | null) => void;
     setFlag: (key: string, value: unknown) => void;
+    applyEffect: (effect: Effect) => void;
 }
 
-export const useGameStore = create<State & Action>()((set) => ({
+export const useGameStore = create<GameState & Action>()((set) => ({
     currentLocationId: 'loc_behind_hlavka_pub',
     inventory: new Set<string>(),
     locationItems: initLocationItems(),
@@ -49,12 +51,6 @@ export const useGameStore = create<State & Action>()((set) => ({
                 locationItems: { ...state.locationItems, [state.currentLocationId]: next },
             };
         }),
-    removeItemFromLocation: (locationId, itemId) =>
-        set((state) => {
-            const next = new Set(state.locationItems[locationId]);
-            next.delete(itemId);
-            return { locationItems: { ...state.locationItems, [locationId]: next } };
-        }),
     addLogEntry: (entry) =>
         set((state) => ({
             log: [...state.log, { ...entry, id: state.log.length + 1 }],
@@ -62,4 +58,5 @@ export const useGameStore = create<State & Action>()((set) => ({
     setHoveredItem: (itemId) => set({ hoveredItemId: itemId }),
     setFlag: (key, value) =>
         set((state) => ({ flags: { ...state.flags, [key]: value } })),
+    applyEffect: (effect) => set((state) => applyEffectToState(effect, state)),
 }));

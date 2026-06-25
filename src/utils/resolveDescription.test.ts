@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { resolveDescription } from './resolveDescription';
-import type { Location } from '../types/Location';
+import type { Location } from '@type/Location';
 
 const base = 'Base description.';
 

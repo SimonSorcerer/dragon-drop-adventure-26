@@ -10,6 +10,7 @@ import { items } from './assets/items/items';
 function App() {
     const pickUpItem = useGameStore((state) => state.pickUpItem);
     const addLogEntry = useGameStore((state) => state.addLogEntry);
+    const applyEffect = useGameStore((state) => state.applyEffect);
     const navigate = useNavigation();
 
     useEffect(() => {
@@ -38,6 +39,7 @@ function App() {
                     prefix: interaction.prefix,
                     text: interaction.text,
                 });
+                interaction.effects?.forEach((effect) => applyEffect(effect));
             }
         }
     };
