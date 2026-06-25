@@ -9,9 +9,11 @@ A text-adventure game engine where the primary interaction mechanic is **drag an
 - **Uses items** by dragging from inventory (or location) and dropping onto another highlighted item word in the prose
 - **Navigates** between locations via exit links in the description or a navigation bar
 
-When an item is picked up, the description text should change — the item word disappears and the prose is rewritten to reflect the new state. This means each item pickup has a corresponding description variant for the location. **Not yet implemented** — description variants are a planned mechanic.
+When an item is picked up, the description text should change — the item word disappears and the prose is rewritten to reflect the new state. **Description variants** are a planned mechanic — see ENGINE_ROADMAP.md.
 
 Game content lives in TypeScript files under `src/assets/` — no backend.
+
+This engine is **game-agnostic**. The first game shipped in it is a remake of _Ramonovo Kouzlo_ (1995). See `RAMONOVO_KOUZLO_REFERENCE.md` for game canon. The engine must not contain any hardcoded references to that game's content.
 
 ---
 
@@ -19,7 +21,7 @@ Game content lives in TypeScript files under `src/assets/` — no backend.
 
 - **React 19 + TypeScript + Vite** (`npm run dev`, `npm run build`, `npm run preview`)
 - **`@dnd-kit/core`** — all drag-and-drop (draggable items, droppable inventory, droppable item targets)
-- **`zustand`** — global game state (inventory, event log, hover state)
+- **`zustand`** — global game state (inventory, event log, hover state, current location, flags)
 - **`clsx`** — conditional classnames
 - **CSS Modules** — `*.module.css` per component, no global utility classes
 
@@ -27,13 +29,13 @@ Game content lives in TypeScript files under `src/assets/` — no backend.
 
 ## Path aliases (vite.config.ts)
 
-| Alias | Resolves to |
-|---|---|
-| `@` | `src/` |
-| `@assets` | `src/assets/` |
+| Alias         | Resolves to       |
+| ------------- | ----------------- |
+| `@`           | `src/`            |
+| `@assets`     | `src/assets/`     |
 | `@components` | `src/components/` |
-| `@utils` | `src/utils/` |
-| `@types` | `src/types/` |
+| `@utils`      | `src/utils/`      |
+| `@types`      | `src/types/`      |
 
 Always prefer these over relative imports.
 
@@ -41,18 +43,18 @@ Always prefer these over relative imports.
 
 ## Color palette
 
-| Token | Value | Usage |
-|---|---|---|
-| Background | `#333` | Page body |
-| Surface dark | `#222` | Console bar |
-| Surface mid | `#444` | Inventory drop-zone active state |
-| Border | `#666` | Dashed borders, item brackets |
-| Text primary | `#fff` | Body text |
-| Text muted | `#666` | Old/faded log entries |
-| Text prefix-old | `#999` | Prefix of faded log entries |
-| Gold | `gold` | Console text, hover state on items |
-| Orange-red | `orangered` | Non-pickable item color |
-| Yellow-green | `yellowgreen` | Pickable item color, log prefixes |
+| Token           | Value         | Usage                              |
+| --------------- | ------------- | ---------------------------------- |
+| Background      | `#333`        | Page body                          |
+| Surface dark    | `#222`        | Console bar                        |
+| Surface mid     | `#444`        | Inventory drop-zone active state   |
+| Border          | `#666`        | Dashed borders, item brackets      |
+| Text primary    | `#fff`        | Body text                          |
+| Text muted      | `#666`        | Old/faded log entries              |
+| Text prefix-old | `#999`        | Prefix of faded log entries        |
+| Gold            | `gold`        | Console text, hover state on items |
+| Orange-red      | `orangered`   | Non-pickable item color            |
+| Yellow-green    | `yellowgreen` | Pickable item color, log prefixes  |
 
 ---
 
@@ -62,11 +64,11 @@ Always prefer these over relative imports.
 
 ```ts
 interface Item {
-  id: string;
-  name: string;
-  description: string;   // shown on hover/examine
-  interactive: boolean;
-  canPickup: boolean;
+    id: string;
+    name: string;
+    description: string; // shown on hover/examine
+    interactive: boolean;
+    canPickup: boolean;
 }
 ```
 
@@ -74,13 +76,45 @@ interface Item {
 
 ```ts
 interface Location {
-  id: string;
-  name: string;
-  description: string;   // prose — contains {{item_id}} placeholders
-  photo: string;         // filename under src/assets/ (not currently rendered)
-  items: Item[];
-  exits: LocationExit[];
+    id: string;
+    name: string;
+    description: string; // prose — contains {{item_id}} placeholders
+    descriptionVariants?: Record<string, string>; // keyed by flag condition e.g. "item_taken:bottle"
+    images: {
+        ascii?: string; // path to ASCII art file or inline string
+        retro?: string; // filename of 1995 original photograph
+        modern?: string; // filename of modern photograph (optional — may not exist)
+    };
+    items: Item[];
+    exits: LocationExit[];
 }
+
+interface LocationExit {
+    direction: string;
+    destination: string; // location id
+    description: string;
+}
+```
+
+### `Interaction`
+
+Lives in `src/assets/interactions/interactions.ts`. Matches are order-independent (A+B = B+A).
+
+```ts
+interface Interaction {
+    keys: [string, string]; // [itemIdA, itemIdB]
+    prefix: string; // e.g. "Break crate with bottle"
+    text: string; // narrative result
+    effects?: Effect[]; // optional state changes
+}
+
+type Effect =
+    | { type: 'addItem'; itemId: string }
+    | { type: 'removeItem'; itemId: string }
+    | { type: 'transformItem'; fromId: string; toId: string }
+    | { type: 'unlockExit'; locationId: string; direction: string }
+    | { type: 'setFlag'; key: string; value: unknown }
+    | { type: 'triggerDialogue'; dialogueId: string };
 ```
 
 ### Description placeholders
@@ -89,7 +123,7 @@ The `description` string uses `{{item_id}}` placeholders that `parseLocationDesc
 
 - `{{item_id}}` — renders a draggable + droppable `<Item context="location" id="item_id" />`
 
-`stripPlaceholders(text)` (`src/utils/stripPlaceholders.ts`) converts a description to plain text by replacing `{{item_id}}` with the item's `name` — used when adding the location prose to the event log.
+`stripPlaceholders(text)` (`src/utils/stripPlaceholders.ts`) converts a description to plain text by replacing `{{item_id}}` with the item's `name` — used when adding location prose to the event log.
 
 ---
 
@@ -98,6 +132,7 @@ The `description` string uses `{{item_id}}` placeholders that `parseLocationDesc
 ```
 .game (600×480px, dashed border)
   .gameHeader — h2 title + Settings icons (flex row)
+  .locationImage — image panel with toggle control (see IMAGE_SYSTEM.md)
   .location   — prose paragraph with inline draggable item spans
   .description — scrolling event log (max 8em, newest entry first)
     .record        — newest entry (white)
@@ -114,8 +149,9 @@ The `description` string uses `{{item_id}}` placeholders that `parseLocationDesc
 
 ```
 App.tsx                   — DndContext root; initialises log; handles drag-end dispatch
-└─ Game.tsx               — Layout: header | Location | Description | ActionBar | Inventory
+└─ Game.tsx               — Layout: header | LocationImage | Location | Description | ActionBar | Inventory
    ├─ Settings.tsx         — Dark mode / text size / playback (TTS) toggles (in header)
+   ├─ LocationImage.tsx    — Image panel with three-state toggle (ascii/retro/modern)
    ├─ Location.tsx         — Parsed description prose with inline Item spans
    ├─ Description.tsx      — Scrolling event log (reads log[] from store)
    ├─ ActionBar.tsx        — Console bar; live drag/hover feedback via useDndMonitor
@@ -123,7 +159,7 @@ App.tsx                   — DndContext root; initialises log; handles drag-end
    └─ Item.tsx             — Inline <span>; both draggable and droppable
 ```
 
-`Box.tsx` is a generic panel wrapper with an optional `placeholder` label. It forwards `ref` as a regular prop (not `React.forwardRef`) — preserve this pattern. Currently unused by the main layout but kept for future use.
+`Box.tsx` is a generic panel wrapper with an optional `placeholder` label. It forwards `ref` as a regular prop (not `React.forwardRef`) — preserve this pattern.
 
 ---
 
@@ -133,13 +169,20 @@ Backed by zustand.
 
 ```ts
 {
-  inventory: Set<string>         // item ids currently held
-  log: LogEntry[]                // event log entries, oldest first
-  hoveredItemId: string | null   // item currently under the mouse (no drag)
+  currentLocationId: string           // active location; drives Location + LocationImage
+  inventory: Set<string>              // item ids currently held
+  locationItems: Record<string, string[]>  // itemIds present per location (runtime mutable)
+  log: LogEntry[]                     // event log entries, oldest first
+  hoveredItemId: string | null        // item currently under the mouse (no drag)
+  flags: Record<string, unknown>      // story progression flags e.g. { gate_unlocked: true }
 
-  pickUpItem(itemId): void
+  navigateTo(locationId: string): void
+  pickUpItem(itemId: string): void
+  removeItemFromLocation(locationId: string, itemId: string): void
+  applyEffect(effect: Effect): void
   addLogEntry(entry: LogEntry): void
   setHoveredItem(itemId: string | null): void
+  setFlag(key: string, value: unknown): void
 }
 
 interface LogEntry {
@@ -177,31 +220,41 @@ Always create a new `Set` when mutating inventory — do not mutate in place.
 
 ### Item visual states
 
-| State | Class(es) | Color |
-|---|---|---|
-| Non-pickable item | `.item` | `orangered` |
-| Pickable item | `.item.pickable` | `yellowgreen` |
-| Any item on hover | `.item:hover` | `gold` |
-| Item dragged over | `.item.over` | `gold` |
+| State             | Class(es)             | Color                    |
+| ----------------- | --------------------- | ------------------------ |
+| Non-pickable item | `.item`               | `orangered`              |
+| Pickable item     | `.item.pickable`      | `yellowgreen`            |
+| Any item on hover | `.item:hover`         | `gold`                   |
+| Item dragged over | `.item.over`          | `gold`                   |
 | Item in inventory | `.item.inventoryItem` | `[ ]` brackets in `#666` |
 
 ### Use interactions (item → item)
 
-Interaction rules live in `src/assets/interactions/interactions.ts` as an array of `{ keys: [itemId, itemId], prefix, text }`. `findInteraction(itemIdA, itemIdB)` matches in either key order. When a drag-drop lands on `'target-' + targetId`, `App.tsx` looks up the rule and calls `addLogEntry` with the result. Rules are order-independent (A+B = B+A).
+Interaction rules live in `src/assets/interactions/interactions.ts`. `findInteraction(itemIdA, itemIdB)` matches in either key order. When a drag-drop lands on `'target-' + targetId`, `App.tsx` looks up the rule, calls `addLogEntry`, then applies any `effects` via `applyEffect`. Rules are order-independent.
 
 ### Pickup guard
 
-Only items with `canPickup: true` can be dragged into inventory. Non-pickable items (`interactive: true`, `canPickup: false`) are drop targets only — the player can use held items on them.
+Only items with `canPickup: true` can be dragged into inventory. Non-pickable items (`interactive: true`, `canPickup: false`) are drop targets only.
 
 ### Navigation
 
-Exits are defined on `Location` as `{ direction, destination, description }`. Destination is a location id. The active location in game store is not yet implemented — currently `loc01` is hardcoded as the default in `Location.tsx`.
+Exits are defined on `Location` as `{ direction, destination, description }`. `navigateTo(locationId)` in the store updates `currentLocationId` and logs the new location prose. `Location.tsx` and `LocationImage.tsx` both read `currentLocationId` from the store — do not hardcode any location id.
+
+### Image toggle
+
+See `IMAGE_SYSTEM.md` for the full spec. `LocationImage.tsx` reads the current location's `images` object and the user's active toggle state (local component state, not in game store). The toggle cycles through only available image states — if `modern` is absent, only ascii/retro are available.
 
 ---
 
-## Editor
+## Monorepo structure
 
-The editor is a **separate app** (monorepo sibling). It will share `src/types/Location.ts` (or a shared package). The player app and editor app each have their own Vite config, `package.json`, and deployment target. Do not build editor UI into the current player app.
+```
+/
+├── player/        — the game player app (this codebase)
+└── editor/        — separate Vite app, shares types via shared package or path alias
+```
+
+The editor is a **separate app**. It shares `src/types/Location.ts` (or a shared package). Do not build editor UI into the player app.
 
 ---
 
@@ -212,6 +265,7 @@ The editor is a **separate app** (monorepo sibling). It will share `src/types/Lo
 - No comments unless the reason is non-obvious
 - No test framework currently — if adding tests, use Vitest (compatible with Vite)
 - Item ids use `snake_case`; location ids use `loc_` prefix with descriptive slug
+- All game content (locations, items, interactions) lives under `src/assets/` as TypeScript data files
 
 ---
 
@@ -225,3 +279,7 @@ Keep modules small and focused. Business logic must not live inside visual compo
 - **Shared/general logic** → a hook in `src/utils/` (e.g. `useDragFeedback.ts`)
 
 Visual components in general-purpose modules should stay **under 100 lines**. If a component is growing beyond that, it is a signal that logic or structure needs to be extracted.
+
+@docs/RAMONOVO_KOUZLO_REFERENCE.md
+@docs/IMAGE_SYSTEM.md
+@docs/ENGINE_ROADMAP.md
