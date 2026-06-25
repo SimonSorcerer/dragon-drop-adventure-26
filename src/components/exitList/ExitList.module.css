@@ -1,0 +1,25 @@
+.exitList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    padding: 6px 4px 6px;
+    border-top: 1px dashed #666;
+}
+
+.exit {
+    color: cornflowerblue;
+    cursor: pointer;
+}
+
+.exit:hover {
+    color: gold;
+}
+
+.number {
+    color: #666;
+}
+
+.locked {
+    color: #666;
+    cursor: not-allowed;
+}

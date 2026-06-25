@@ -7,6 +7,7 @@ export interface LogEntry {
 }
 
 interface State {
+    currentLocationId: string;
     inventory: Set<string>;
     log: LogEntry[];
     hoveredItemId: string | null;
@@ -14,6 +15,7 @@ interface State {
 }
 
 interface Action {
+    navigateTo: (locationId: string) => void;
     pickUpItem: (itemId: string) => void;
     addLogEntry: (entry: Omit<LogEntry, 'id'>) => void;
     setHoveredItem: (itemId: string | null) => void;
@@ -21,10 +23,12 @@ interface Action {
 }
 
 export const useGameStore = create<State & Action>()((set) => ({
+    currentLocationId: 'loc_behind_hlavka_pub',
     inventory: new Set<string>(),
     log: [],
     hoveredItemId: null,
     flags: {},
+    navigateTo: (locationId) => set({ currentLocationId: locationId }),
     pickUpItem: (itemId) =>
         set((state) => ({
             inventory: new Set(state.inventory).add(itemId),

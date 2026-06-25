@@ -4,6 +4,7 @@ import { Inventory } from './inventory/Inventory';
 import { Location } from './location/Location';
 import { Settings } from './settings/Settings';
 import { Description } from './description/Description';
+import { ExitList } from './exitList/ExitList';
 
 export const Game = () => {
     return (
@@ -13,6 +14,7 @@ export const Game = () => {
                 <Settings />
             </div>
             <Location />
+            <ExitList />
             <Description />
             <ActionBar />
             <Inventory />

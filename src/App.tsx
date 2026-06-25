@@ -4,16 +4,16 @@ import { useEffect } from 'react';
 import { Game } from './components/Game';
 import { useGameStore } from './utils/useGameStore';
 import { findInteraction } from './assets/interactions/interactions';
-import { stripPlaceholders } from './utils/stripPlaceholders';
-import { loc01 } from './assets/locations/loc01';
+import { useNavigation } from './utils/useNavigation';
 import { items } from './assets/items/items';
 
 function App() {
     const pickUpItem = useGameStore((state) => state.pickUpItem);
     const addLogEntry = useGameStore((state) => state.addLogEntry);
+    const navigate = useNavigation();
 
     useEffect(() => {
-        addLogEntry({ text: stripPlaceholders(loc01.description) });
+        navigate(useGameStore.getState().currentLocationId);
     }, []);
 
     const handleDragEnd = (event: DragEndEvent) => {

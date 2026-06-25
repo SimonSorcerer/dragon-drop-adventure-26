@@ -10,6 +10,7 @@ export interface LocationExit {
     direction: string;
     destination: string;
     description: string;
+    locked?: boolean;
 }
 
 export interface DescriptionVariant {

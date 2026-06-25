@@ -1,0 +1,13 @@
+.exitLink {
+    color: cornflowerblue;
+    cursor: pointer;
+}
+
+.exitLink:hover {
+    color: gold;
+}
+
+.locked {
+    color: #666;
+    cursor: not-allowed;
+}
