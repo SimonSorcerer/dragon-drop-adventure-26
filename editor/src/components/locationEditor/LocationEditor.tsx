@@ -31,6 +31,7 @@ export const LocationEditor = ({ location }: Props) => {
                 value={location.description}
                 onChange={(description) => up({ description })}
                 multiline
+                storageKey='location-description'
                 placeholder='You stand in the square. A {{rusty_key}} lies on the cobblestones. Head {{exit:dark_alley}} to explore further.'
             />
             <ItemSection location={location} />

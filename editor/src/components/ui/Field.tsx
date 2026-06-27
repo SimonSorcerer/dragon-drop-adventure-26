@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import style from './Field.module.css';
 
 interface FieldProps {
@@ -7,18 +8,19 @@ interface FieldProps {
     multiline?: boolean;
     placeholder?: string;
     mono?: boolean;
+    storageKey?: string;
 }
 
-export const Field = ({ label, value, onChange, multiline, placeholder, mono }: FieldProps) => (
+export const Field = ({ label, value, onChange, multiline, placeholder, mono, storageKey }: FieldProps) => (
     <label className={style.field}>
         <span className={style.label}>{label}</span>
         {multiline ? (
-            <textarea
+            <ResizableTextarea
                 className={`${style.input} ${mono ? style.mono : ''}`}
                 value={value}
-                rows={4}
                 placeholder={placeholder}
-                onChange={(e) => onChange(e.target.value)}
+                onChange={onChange}
+                storageKey={storageKey}
             />
         ) : (
             <input
@@ -31,6 +33,43 @@ export const Field = ({ label, value, onChange, multiline, placeholder, mono }: 
         )}
     </label>
 );
+
+interface TextareaProps {
+    className: string;
+    value: string;
+    placeholder?: string;
+    onChange: (v: string) => void;
+    storageKey?: string;
+}
+
+const ResizableTextarea = ({ className, value, placeholder, onChange, storageKey }: TextareaProps) => {
+    const ref = useRef<HTMLTextAreaElement>(null);
+
+    useEffect(() => {
+        if (storageKey && ref.current) {
+            const saved = localStorage.getItem(`field-height:${storageKey}`);
+            if (saved) ref.current.style.height = saved;
+        }
+    }, [storageKey]);
+
+    const handleMouseUp = () => {
+        if (storageKey && ref.current) {
+            localStorage.setItem(`field-height:${storageKey}`, `${ref.current.offsetHeight}px`);
+        }
+    };
+
+    return (
+        <textarea
+            ref={ref}
+            className={className}
+            value={value}
+            rows={7}
+            placeholder={placeholder}
+            onChange={(e) => onChange(e.target.value)}
+            onMouseUp={handleMouseUp}
+        />
+    );
+};
 
 interface SelectFieldProps {
     label: string;
