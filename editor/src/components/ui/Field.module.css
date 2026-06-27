@@ -36,6 +36,11 @@ select.input {
     cursor: pointer;
 }
 
+.error {
+    font-size: 11px;
+    color: #c44;
+}
+
 .toggle {
     display: flex;
     align-items: center;

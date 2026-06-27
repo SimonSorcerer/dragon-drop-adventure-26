@@ -10,9 +10,10 @@ interface FieldProps {
     placeholder?: string;
     mono?: boolean;
     storageKey?: string;
+    error?: string;
 }
 
-export const Field = ({ label, value, onChange, onBlur, multiline, placeholder, mono, storageKey }: FieldProps) => (
+export const Field = ({ label, value, onChange, onBlur, multiline, placeholder, mono, storageKey, error }: FieldProps) => (
     <label className={style.field}>
         <span className={style.label}>{label}</span>
         {multiline ? (
@@ -34,6 +35,7 @@ export const Field = ({ label, value, onChange, onBlur, multiline, placeholder, 
                 onBlur={(e) => onBlur?.(e.target.value)}
             />
         )}
+        {error && <span className={style.error}>{error}</span>}
     </label>
 );
 
