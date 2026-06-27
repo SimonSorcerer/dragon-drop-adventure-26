@@ -1,0 +1,8 @@
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    background: #1a1a1a;
+    color: #ccc;
+    font-family: monospace;
+}

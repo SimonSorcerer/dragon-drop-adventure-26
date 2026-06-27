@@ -1,0 +1,120 @@
+.page {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.title {
+    margin: 0;
+    color: gold;
+    font-size: 18px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.dropZone {
+    border: 1px dashed #555;
+    min-height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background: #111;
+    transition: border-color 0.15s;
+    overflow: hidden;
+}
+
+.dropZone:hover {
+    border-color: gold;
+}
+
+.dropHint {
+    color: #555;
+    font-size: 13px;
+}
+
+.preview {
+    max-width: 100%;
+    max-height: 200px;
+    object-fit: contain;
+    image-rendering: pixelated;
+}
+
+.fileInput {
+    display: none;
+}
+
+.controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    color: #aaa;
+    cursor: default;
+}
+
+.labelText {
+    width: 160px;
+    flex-shrink: 0;
+}
+
+.labelText strong {
+    color: #ddd;
+    font-weight: normal;
+}
+
+.slider {
+    flex: 1;
+    accent-color: gold;
+}
+
+.outputSection {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.outputHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: #666;
+}
+
+.copyBtn {
+    background: none;
+    border: 1px solid #555;
+    color: #aaa;
+    padding: 2px 10px;
+    cursor: pointer;
+    font-family: monospace;
+    font-size: 12px;
+}
+
+.copyBtn:hover {
+    border-color: gold;
+    color: gold;
+}
+
+.output {
+    background: #0d0d0d;
+    border: 1px solid #333;
+    padding: 8px;
+    margin: 0;
+    font-family: monospace;
+    font-size: 7px;
+    line-height: 1.1;
+    color: #bbb;
+    white-space: pre;
+    overflow-x: auto;
+}

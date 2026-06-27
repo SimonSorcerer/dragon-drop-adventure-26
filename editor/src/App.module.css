@@ -1,0 +1,26 @@
+.nav {
+    display: flex;
+    border-bottom: 1px solid #333;
+    padding: 0 24px;
+}
+
+.tab, .tabActive {
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: #666;
+    font-family: monospace;
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 10px 16px;
+    cursor: pointer;
+    margin-bottom: -1px;
+}
+
+.tabActive {
+    color: gold;
+    border-bottom-color: gold;
+}
+
+.tab:hover { color: #aaa; }
