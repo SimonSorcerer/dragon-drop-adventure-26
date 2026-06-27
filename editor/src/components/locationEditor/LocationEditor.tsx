@@ -12,19 +12,20 @@ function toId(name: string) {
 }
 
 export const LocationEditor = ({ location }: Props) => {
-    const { updateLocation } = useEditorStore();
+    const { updateLocation, selectLocation } = useEditorStore();
     const up = (patch: Partial<Location>) => updateLocation(location.id, patch);
 
-    const handleNameChange = (name: string) => {
+    const handleNameBlur = (name: string) => {
         const derived = toId(name);
-        up({ name, id: derived });
+        up({ id: derived });
+        selectLocation(derived);
     };
 
     return (
         <div className={style.editor}>
             <div className={style.row}>
-                <Field label='Name' value={location.name} onChange={handleNameChange} placeholder='Village Square' />
-                <Field label='ID' value={location.id} onChange={(id) => up({ id })} placeholder='village_square' mono />
+                <Field label='Name' value={location.name} onChange={(name) => up({ name })} onBlur={handleNameBlur} placeholder='Village Square' />
+                <Field label='ID' value={location.id} onChange={(id) => up({ id })} onBlur={selectLocation} placeholder='village_square' mono />
             </div>
             <Field
                 label='Description (use {{item_id}} and {{exit:destination_id}} placeholders)'

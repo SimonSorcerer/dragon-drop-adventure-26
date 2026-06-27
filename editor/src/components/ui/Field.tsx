@@ -5,13 +5,14 @@ interface FieldProps {
     label: string;
     value: string;
     onChange: (v: string) => void;
+    onBlur?: (v: string) => void;
     multiline?: boolean;
     placeholder?: string;
     mono?: boolean;
     storageKey?: string;
 }
 
-export const Field = ({ label, value, onChange, multiline, placeholder, mono, storageKey }: FieldProps) => (
+export const Field = ({ label, value, onChange, onBlur, multiline, placeholder, mono, storageKey }: FieldProps) => (
     <label className={style.field}>
         <span className={style.label}>{label}</span>
         {multiline ? (
@@ -20,6 +21,7 @@ export const Field = ({ label, value, onChange, multiline, placeholder, mono, st
                 value={value}
                 placeholder={placeholder}
                 onChange={onChange}
+                onBlur={onBlur}
                 storageKey={storageKey}
             />
         ) : (
@@ -29,6 +31,7 @@ export const Field = ({ label, value, onChange, multiline, placeholder, mono, st
                 value={value}
                 placeholder={placeholder}
                 onChange={(e) => onChange(e.target.value)}
+                onBlur={(e) => onBlur?.(e.target.value)}
             />
         )}
     </label>
@@ -39,10 +42,11 @@ interface TextareaProps {
     value: string;
     placeholder?: string;
     onChange: (v: string) => void;
+    onBlur?: (v: string) => void;
     storageKey?: string;
 }
 
-const ResizableTextarea = ({ className, value, placeholder, onChange, storageKey }: TextareaProps) => {
+const ResizableTextarea = ({ className, value, placeholder, onChange, onBlur, storageKey }: TextareaProps) => {
     const ref = useRef<HTMLTextAreaElement>(null);
 
     useEffect(() => {
@@ -66,6 +70,7 @@ const ResizableTextarea = ({ className, value, placeholder, onChange, storageKey
             rows={7}
             placeholder={placeholder}
             onChange={(e) => onChange(e.target.value)}
+            onBlur={(e) => onBlur?.(e.target.value)}
             onMouseUp={handleMouseUp}
         />
     );
