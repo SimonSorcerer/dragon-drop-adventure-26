@@ -2,6 +2,7 @@ import { ActionBar } from './actionBar/ActionBar';
 import style from './Game.module.css';
 import { Inventory } from './inventory/Inventory';
 import { Location } from './location/Location';
+import { LocationImage } from './locationImage/LocationImage';
 import { Settings } from './settings/Settings';
 import { Description } from './description/Description';
 import { ExitList } from './exitList/ExitList';
@@ -13,6 +14,7 @@ export const Game = () => {
                 <h2>Dragon Drop Adventure</h2>
                 <Settings />
             </div>
+            <LocationImage />
             <Location />
             <ExitList />
             <Description />

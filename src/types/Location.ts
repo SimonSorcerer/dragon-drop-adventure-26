@@ -18,12 +18,18 @@ export interface DescriptionVariant {
     description: string;
 }
 
+export interface LocationImages {
+    ascii?: string;
+    retro?: string;
+    modern?: string;
+}
+
 export interface Location {
     id: string;
     name: string;
     description: string;
     descriptionVariants?: DescriptionVariant[];
-    photo: string;
+    images: LocationImages;
     items: Item[];
     exits: LocationExit[];
 }
