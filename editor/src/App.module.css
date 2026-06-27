@@ -1,26 +1,41 @@
+.app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
 .nav {
     display: flex;
-    border-bottom: 1px solid #333;
-    padding: 0 24px;
+    align-items: center;
+    border-bottom: 1px solid #2a2a2a;
+    padding: 0 8px;
+    flex-shrink: 0;
+    background: #111;
 }
 
 .tab, .tabActive {
     background: none;
     border: none;
     border-bottom: 2px solid transparent;
-    color: #666;
+    color: #555;
     font-family: monospace;
-    font-size: 13px;
+    font-size: 12px;
     letter-spacing: 1px;
     text-transform: uppercase;
-    padding: 10px 16px;
+    padding: 10px 14px;
     cursor: pointer;
     margin-bottom: -1px;
 }
 
-.tabActive {
-    color: gold;
-    border-bottom-color: gold;
+.tabActive { color: gold; border-bottom-color: gold; }
+.tab:hover { color: #aaa; }
+
+.sep {
+    flex: 1;
 }
 
-.tab:hover { color: #aaa; }
+.main {
+    flex: 1;
+    overflow: hidden;
+}

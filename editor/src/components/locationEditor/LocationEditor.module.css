@@ -1,0 +1,12 @@
+.editor {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 720px;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 12px;
+}

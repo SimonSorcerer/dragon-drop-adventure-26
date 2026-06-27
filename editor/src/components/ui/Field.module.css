@@ -1,0 +1,51 @@
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.label {
+    font-size: 11px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.input {
+    background: #111;
+    border: 1px solid #333;
+    color: #ccc;
+    font-family: sans-serif;
+    font-size: 13px;
+    padding: 5px 8px;
+    width: 100%;
+    box-sizing: border-box;
+    resize: vertical;
+}
+
+.input:focus {
+    outline: none;
+    border-color: #666;
+}
+
+.mono {
+    font-family: monospace;
+}
+
+select.input {
+    cursor: pointer;
+}
+
+.toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #aaa;
+    cursor: pointer;
+    user-select: none;
+}
+
+.toggle input {
+    accent-color: gold;
+}

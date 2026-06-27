@@ -8,7 +8,7 @@ const location = (variants?: Location['descriptionVariants']): Location => ({
     id: 'test',
     name: 'Test',
     description: base,
-    photo: '',
+    images: {},
     items: [],
     exits: [],
     descriptionVariants: variants,

@@ -1,12 +1,5 @@
 import { items } from '@assets/items/items';
-import type { Effect } from '@type/Effect';
-
-interface Interaction {
-    keys: [string, string];
-    prefix: string;
-    text: string;
-    effects?: Effect[];
-}
+import type { Interaction } from '@type/Interaction';
 
 export const interactions: Interaction[] = [
     {
