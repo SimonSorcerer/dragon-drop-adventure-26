@@ -8,6 +8,9 @@ dist/
 vite.config.ts.timestamp-*
 *.local
 
+# TypeScript build cache
+*.tsbuildinfo
+
 # macOS
 .DS_Store
 

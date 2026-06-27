@@ -1,1 +1,0 @@
-{"root":["./src/app.tsx","./src/main.tsx","./src/vite-env.d.ts","./src/components/asciiconverter/asciiconverter.tsx","./src/components/retroconverter/retroconverter.tsx","./src/utils/imagetoascii.ts","./src/utils/imagetoretro.ts"],"version":"5.9.3"}
