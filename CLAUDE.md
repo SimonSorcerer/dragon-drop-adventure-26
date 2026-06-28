@@ -280,6 +280,16 @@ Keep modules small and focused. Business logic must not live inside visual compo
 
 Visual components in general-purpose modules should stay **under 100 lines**. If a component is growing beyond that, it is a signal that logic or structure needs to be extracted.
 
+### Avoiding duplication
+
+When writing or reviewing code, always check whether the logic or component already exists elsewhere in the codebase before implementing it. If the same logic appears in two or more places, extract it:
+
+- **Pure functions** (e.g. ID derivation, string manipulation) → `src/utils/` in the relevant app
+- **Shared UI components** → `src/components/ui/` with their own CSS module
+- **Shared hooks** → `src/utils/` as a named hook
+
+Apply this proactively: after implementing something, scan for prior art that is now duplicated and consolidate immediately.
+
 @docs/RAMONOVO_KOUZLO_REFERENCE.md
 @docs/IMAGE_SYSTEM.md
 @docs/ENGINE_ROADMAP.md

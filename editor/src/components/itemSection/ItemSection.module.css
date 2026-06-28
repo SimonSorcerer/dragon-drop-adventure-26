@@ -21,9 +21,14 @@
     cursor: pointer;
 }
 
-.addBtn:hover { border-color: gold; color: gold; }
+.addBtn:hover {
+    border-color: gold;
+    color: gold;
+}
 
-.item { border-top: 1px solid #222; }
+.item {
+    border-top: 1px solid #222;
+}
 
 .row {
     display: flex;
@@ -34,11 +39,24 @@
     font-size: 13px;
 }
 
-.row:hover { background: #1e1e1e; }
+.row:hover {
+    background: #1e1e1e;
+}
 
-.arrow { color: #444; width: 12px; flex-shrink: 0; }
-.itemName { color: #bbb; flex: 1; }
-.itemId { color: #444; font-family: monospace; font-size: 11px; }
+.arrow {
+    color: #444;
+    width: 12px;
+    flex-shrink: 0;
+}
+.itemName {
+    color: #bbb;
+    flex: 1;
+}
+.itemId {
+    color: #444;
+    font-family: monospace;
+    font-size: 11px;
+}
 
 .deleteBtn {
     background: none;
@@ -48,7 +66,9 @@
     font-size: 16px;
 }
 
-.deleteBtn:hover { color: #c00; }
+.deleteBtn:hover {
+    color: #c00;
+}
 
 .form {
     padding: 12px;

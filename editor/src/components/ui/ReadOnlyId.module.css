@@ -1,0 +1,32 @@
+.idField {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.idLabel {
+    font-size: 11px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.idValue {
+    font-family: monospace;
+    font-size: 13px;
+    color: #666;
+    padding: 5px 8px;
+    background: #0d0d0d;
+    border: 1px solid #222;
+    user-select: all;
+}
+
+.idError {
+    color: #c44;
+    border-color: #c44;
+}
+
+.idErrorMsg {
+    font-size: 11px;
+    color: #c44;
+}

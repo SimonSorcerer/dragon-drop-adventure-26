@@ -1,49 +1,47 @@
 import type { Location } from '@type/Location';
 import { useEditorStore } from '../../utils/useEditorStore';
 import { Field } from '../ui/Field';
+import { ReadOnlyId } from '../ui/ReadOnlyId';
 import { ItemSection } from '../itemSection/ItemSection';
 import { ExitSection } from '../exitSection/ExitSection';
+import { slugify, uniqueId } from '../../utils/idUtils';
 import style from './LocationEditor.module.css';
 
-const ReadOnlyId = ({ id, duplicate }: { id: string; duplicate: boolean }) => (
-    <div className={style.idField}>
-        <span className={style.idLabel}>ID</span>
-        <span className={`${style.idValue} ${duplicate ? style.idError : ''}`}>{id}</span>
-        {duplicate && <span className={style.idErrorMsg}>ID already in use</span>}
-    </div>
-);
-
-interface Props { location: Location; }
-
-function toId(name: string) {
-    return 'loc_' + name.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+interface Props {
+    location: Location;
 }
 
-function uniqueId(base: string, takenIds: string[]): string {
-    if (!takenIds.includes(base)) return base;
-    let n = 2;
-    while (takenIds.includes(`${base}_${n}`)) n++;
-    return `${base}_${n}`;
+function toId(name: string): string {
+    return 'loc_' + slugify(name);
 }
 
 export const LocationEditor = ({ location }: Props) => {
     const { project, updateLocation, selectLocation } = useEditorStore();
     const up = (patch: Partial<Location>) => updateLocation(location.id, patch);
 
-    const otherIds = project.locations.filter((l) => l.id !== location.id).map((l) => l.id);
-    const isDuplicate = otherIds.includes(location.id);
+    const otherIds = project.locations
+        .filter((l) => l.id !== location.id)
+        .map((l) => l.id);
 
     const handleNameBlur = (name: string) => {
         const derived = uniqueId(toId(name), otherIds);
-        up({ id: derived });
-        selectLocation(derived);
+        if (derived !== location.id) {
+            up({ id: derived });
+            selectLocation(derived);
+        }
     };
 
     return (
         <div className={style.editor}>
             <div className={style.row}>
-                <Field label='Name' value={location.name} onChange={(name) => up({ name })} onBlur={handleNameBlur} placeholder='Village Square' />
-                <ReadOnlyId id={location.id} duplicate={isDuplicate} />
+                <Field
+                    label='Name'
+                    value={location.name}
+                    onChange={(name) => up({ name })}
+                    onBlur={handleNameBlur}
+                    placeholder='Village Square'
+                />
+                <ReadOnlyId id={location.id} />
             </div>
             <Field
                 label='Description (use {{item_id}} and {{exit:destination_id}} placeholders)'
