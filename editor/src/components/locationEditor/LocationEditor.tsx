@@ -2,6 +2,7 @@ import type { Location } from '@type/Location';
 import { useEditorStore } from '../../utils/useEditorStore';
 import { Field } from '../ui/Field';
 import { ReadOnlyId } from '../ui/ReadOnlyId';
+import { DescriptionVariantsSection } from '../descriptionVariantsSection/DescriptionVariantsSection';
 import { ItemSection } from '../itemSection/ItemSection';
 import { ExitSection } from '../exitSection/ExitSection';
 import { slugify, uniqueId } from '../../utils/idUtils';
@@ -51,6 +52,7 @@ export const LocationEditor = ({ location }: Props) => {
                 storageKey='location-description'
                 placeholder='You stand in the square. A {{rusty_key}} lies on the cobblestones. Head {{exit:dark_alley}} to explore further.'
             />
+            <DescriptionVariantsSection location={location} />
             <ItemSection location={location} />
             <ExitSection location={location} />
         </div>

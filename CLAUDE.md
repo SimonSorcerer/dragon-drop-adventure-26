@@ -79,7 +79,7 @@ interface Location {
     id: string;
     name: string;
     description: string; // prose — contains {{item_id}} placeholders
-    descriptionVariants?: Record<string, string>; // keyed by flag condition e.g. "item_taken:bottle"
+    descriptionVariants?: DescriptionVariant[]; // evaluated in order; first matching variant wins
     images: {
         ascii?: string; // path to ASCII art file or inline string
         retro?: string; // filename of 1995 original photograph
