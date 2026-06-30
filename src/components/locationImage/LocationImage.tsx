@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { locations } from '@assets/locations/locations';
 import { useGameStore } from '@utils/useGameStore';
 import type { LocationImages } from '@type/Location';
 import style from './LocationImage.module.css';
@@ -18,10 +17,17 @@ function firstAvailable(images: LocationImages): ImageState | null {
 
 export const LocationImage = () => {
     const currentLocationId = useGameStore((state) => state.currentLocationId);
-    const images = locations[currentLocationId]?.images ?? {};
+    const images = useGameStore(
+        (state) => state.locations[state.currentLocationId]?.images ?? {},
+    );
+    const locationName = useGameStore(
+        (state) => state.locations[state.currentLocationId]?.name ?? '',
+    );
     const available = availableStates(images);
 
-    const [active, setActive] = useState<ImageState | null>(() => firstAvailable(images));
+    const [active, setActive] = useState<ImageState | null>(() =>
+        firstAvailable(images),
+    );
 
     useEffect(() => {
         setActive(firstAvailable(images));
@@ -39,8 +45,8 @@ export const LocationImage = () => {
         retro: 'View 1995 photo',
         modern: 'View modern photo',
     };
-    const nextState = available[(available.indexOf(active) + 1) % available.length];
-    const locationName = locations[currentLocationId]?.name ?? '';
+    const nextState =
+        available[(available.indexOf(active) + 1) % available.length];
 
     return (
         <div className={style.panel}>

@@ -1,4 +1,4 @@
-import { items } from '@assets/items/items';
+import type { Item } from '@type/Location';
 import type { Interaction } from '@type/Interaction';
 
 export const interactions: Interaction[] = [
@@ -19,7 +19,7 @@ export const interactions: Interaction[] = [
     },
 ];
 
-function fallback(itemId: string, targetId: string): Interaction {
+function fallback(itemId: string, targetId: string, items: Record<string, Item>): Interaction {
     const a = items[itemId]?.name ?? itemId;
     const b = items[targetId]?.name ?? targetId;
     return {
@@ -29,12 +29,17 @@ function fallback(itemId: string, targetId: string): Interaction {
     };
 }
 
-export function findInteraction(itemId: string, targetId: string) {
+export function findInteraction(
+    itemId: string,
+    targetId: string,
+    interactions: Interaction[],
+    items: Record<string, Item>,
+) {
     return (
         interactions.find(
             (i) =>
                 (i.keys[0] === itemId && i.keys[1] === targetId) ||
                 (i.keys[0] === targetId && i.keys[1] === itemId),
-        ) ?? fallback(itemId, targetId)
+        ) ?? fallback(itemId, targetId, items)
     );
 }

@@ -5,17 +5,18 @@ import { Game } from './components/Game';
 import { useGameStore } from './utils/useGameStore';
 import { findInteraction } from './assets/interactions/interactions';
 import { useNavigation } from './utils/useNavigation';
-import { items } from './assets/items/items';
 
 function App() {
     const pickUpItem = useGameStore((state) => state.pickUpItem);
     const addLogEntry = useGameStore((state) => state.addLogEntry);
     const applyEffect = useGameStore((state) => state.applyEffect);
+    const interactions = useGameStore((state) => state.interactions);
+    const items = useGameStore((state) => state.items);
     const navigate = useNavigation();
 
     useEffect(() => {
         navigate(useGameStore.getState().currentLocationId);
-    }, []);
+    }, [navigate]);
 
     const handleDragEnd = (event: DragEndEvent) => {
         const { over, active } = event;
@@ -34,7 +35,7 @@ function App() {
         ) {
             const targetId = over.id.slice('target-'.length);
             if (targetId !== itemId) {
-                const interaction = findInteraction(itemId, targetId);
+                const interaction = findInteraction(itemId, targetId, interactions, items);
                 addLogEntry({
                     prefix: interaction.prefix,
                     text: interaction.text,

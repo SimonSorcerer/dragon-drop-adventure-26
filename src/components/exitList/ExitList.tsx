@@ -1,5 +1,4 @@
 import clsx from 'clsx';
-import { locations } from '@assets/locations/locations';
 import { useNavigation } from '@utils/useNavigation';
 import { useGameStore } from '@utils/useGameStore';
 import style from './ExitList.module.css';
@@ -8,9 +7,8 @@ export const ExitList = () => {
     const currentLocationId = useGameStore((state) => state.currentLocationId);
     const flags = useGameStore((state) => state.flags);
     const setHoveredInteractable = useGameStore((state) => state.setHoveredInteractable);
+    const location = useGameStore((state) => state.locations[state.currentLocationId]);
     const navigate = useNavigation();
-
-    const location = locations[currentLocationId];
     if (!location || location.exits.length === 0) return null;
 
     return (

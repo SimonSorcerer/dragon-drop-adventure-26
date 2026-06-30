@@ -1,4 +1,3 @@
-import { items } from '@assets/items/items';
 import { useDraggable, useDroppable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { clsx } from 'clsx';
@@ -11,7 +10,7 @@ interface ItemProps {
 }
 
 export const Item = ({ id, context }: ItemProps) => {
-    const item = items[id];
+    const item = useGameStore((state) => state.items[id]);
     const setHoveredInteractable = useGameStore((state) => state.setHoveredInteractable);
 
     const canPickup = item?.canPickup ?? false;

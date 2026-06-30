@@ -1,4 +1,20 @@
 .wrapper {
     display: flex;
     gap: 16px;
+    align-items: center;
+}
+
+.loadBtn {
+    background: none;
+    border: 1px solid #666;
+    color: #999;
+    font-size: 11px;
+    padding: 2px 8px;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.loadBtn:hover {
+    color: gold;
+    border-color: gold;
 }
