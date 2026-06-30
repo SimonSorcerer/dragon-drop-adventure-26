@@ -9,7 +9,9 @@ interface Props { interaction: Interaction; idx: number; }
 export const InteractionEditor = ({ interaction, idx }: Props) => {
     const { project, updateInteraction, addEffect } = useEditorStore();
 
-    const allItemIds = project.locations.flatMap((l) => l.items.map((i) => i.id));
+    const allItems = project.locations.flatMap((l) =>
+        l.items.map((i) => ({ id: i.id, label: `${i.name} — ${l.name}` }))
+    );
 
     const up = (patch: Partial<Interaction>) => updateInteraction(idx, patch);
 
@@ -22,9 +24,9 @@ export const InteractionEditor = ({ interaction, idx }: Props) => {
     return (
         <div className={style.editor}>
             <div className={style.keys}>
-                <KeySelect label='Item A' value={interaction.keys[0]} options={allItemIds} onChange={(v) => setKey(0, v)} />
+                <KeySelect label='Item A' value={interaction.keys[0]} options={allItems} onChange={(v) => setKey(0, v)} />
                 <span className={style.plus}>+</span>
-                <KeySelect label='Item B' value={interaction.keys[1]} options={allItemIds} onChange={(v) => setKey(1, v)} />
+                <KeySelect label='Item B' value={interaction.keys[1]} options={allItems} onChange={(v) => setKey(1, v)} />
             </div>
             <Field label='Prefix (shown in action bar)' value={interaction.prefix} onChange={(prefix) => up({ prefix })} placeholder='Use key with door' />
             <Field label='Result text' value={interaction.text} onChange={(text) => up({ text })} multiline placeholder='The key turns. The door swings open.' />
@@ -43,22 +45,22 @@ export const InteractionEditor = ({ interaction, idx }: Props) => {
 interface KeySelectProps {
     label: string;
     value: string;
-    options: string[];
+    options: { id: string; label: string }[];
     onChange: (v: string) => void;
 }
 
 const KeySelect = ({ label, value, options, onChange }: KeySelectProps) => (
     <label className={style.keySelect}>
         <span className={style.keyLabel}>{label}</span>
-        <input
-            list={`${label}-list`}
+        <select
             className={style.keyInput}
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            placeholder='item_id'
-        />
-        <datalist id={`${label}-list`}>
-            {options.map((o) => <option key={o} value={o} />)}
-        </datalist>
+        >
+            <option value=''>— select item —</option>
+            {options.map((o) => (
+                <option key={o.id} value={o.id}>{o.label}</option>
+            ))}
+        </select>
     </label>
 );
